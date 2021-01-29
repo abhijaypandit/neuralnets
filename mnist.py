@@ -1,3 +1,4 @@
+import time
 import keras
 
 keras.backend.clear_session()
@@ -30,6 +31,7 @@ def train_model(model, X_train, y_train, h_params, callbacks):
         epochs=h_params['epochs'],
         callbacks=callbacks,
         validation_split=0.2,
+        verbose=False
     )
 
     return fit
@@ -57,10 +59,21 @@ if __name__ == "__main__":
     callbacks.append(early_stop)
 
     # Build model
-    model = build_model(layers=2, neurons=64)
+    model = build_model(layers=2, neurons=64, learning_rate=0.03)
 
     # Train model
-    fit = train_model(model,X_train, y_train, h_params, callbacks)
+    print("Training model...")
+    start = time.time()
+    train = train_model(model, X_train, y_train, h_params, callbacks)
+    end = time.time()
+
+    model.summary()
+
+    print("Training time = {:.2f}s".format(end-start))
+    print("Loss = {:.2f}".format(train.history['loss'][-1]))
+    print("Accuracy = {:.2f}".format(train.history['accuracy'][-1]*100))
 
     # Evaluate model
-    model.evaluate(X_test, y_test)
+    print("\nEvaluating model...")
+    eval_loss, eval_accuracy = model.evaluate(X_test, y_test, verbose=False)
+    print("Loss = {:.2f}\nAccuracy = {:.2f}".format(eval_loss, eval_accuracy*100))
