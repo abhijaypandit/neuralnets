@@ -1,3 +1,4 @@
+import os
 import time
 import keras
 import matplotlib.pyplot as plt
@@ -67,8 +68,19 @@ if __name__ == "__main__":
     early_stop = keras.callbacks.EarlyStopping(
         monitor='val_loss', mode='min', patience=10, restore_best_weights=True)
 
+    checkpoint = keras.callbacks.ModelCheckpoint(
+        "mnist_checkpoint.h5", save_best_only=True)
+
+    root_log = os.path.join(os.curdir, "mnist_log")
+    run_id = time.strftime("run_%m_%d_%H_%M_%S")
+    run_log = os.path.join(root_log, run_id)
+
+    tensorboard = keras.callbacks.TensorBoard(run_log)
+
     callbacks = []
     callbacks.append(early_stop)
+    callbacks.append(checkpoint)
+    callbacks.append(tensorboard)
 
     # Build model
     model = build_model(layers=2, neurons=64, learning_rate=0.03)
@@ -93,4 +105,4 @@ if __name__ == "__main__":
     print("Loss = {:.2f}\nAccuracy = {:.2f}".format(eval_loss, eval_accuracy*100))
 
     fig.show()
-    
+   
