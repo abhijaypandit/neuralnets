@@ -1,5 +1,6 @@
 import time
 import keras
+import matplotlib.pyplot as plt
 
 keras.backend.clear_session()
 
@@ -35,6 +36,17 @@ def train_model(model, X_train, y_train, h_params, callbacks):
     )
 
     return fit
+
+def plot(train, metric, name="Figure"):
+    fig = plt.figure()
+    plt.title(name)
+    for x in metric:
+        plt.plot(train.history[x], label=x)
+    plt.xlabel("Epochs")
+    plt.legend()
+    plt.grid()
+
+    return fig
 
 if __name__ == "__main__":
     # Load dataset
@@ -73,7 +85,12 @@ if __name__ == "__main__":
     print("Loss = {:.2f}".format(train.history['loss'][-1]))
     print("Accuracy = {:.2f}".format(train.history['accuracy'][-1]*100))
 
+    fig = plot(train, ['loss', 'val_loss', 'accuracy', 'val_accuracy'], name="Performance")
+
     # Evaluate model
     print("\nEvaluating model...")
     eval_loss, eval_accuracy = model.evaluate(X_test, y_test, verbose=False)
     print("Loss = {:.2f}\nAccuracy = {:.2f}".format(eval_loss, eval_accuracy*100))
+
+    fig.show()
+    
