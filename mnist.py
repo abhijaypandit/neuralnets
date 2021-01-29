@@ -23,11 +23,12 @@ def build_model(layers=1, neurons=32, learning_rate=0.01):
 
     return model
 
-def train_model(model, X_train, y_train):
+def train_model(model, X_train, y_train, h_params, callbacks):
     fit = model.fit(
         X_train, y_train,
-        batch_size=32,
-        epochs=50,
+        batch_size=h_params['batch_size'],
+        epochs=h_params['epochs'],
+        callbacks=callbacks,
         validation_split=0.2,
     )
 
@@ -43,11 +44,23 @@ if __name__ == "__main__":
     X_train = normalize(X_train)
     X_test = normalize(X_test)
 
+    # Define hyperparameters
+    h_params = {}
+    h_params['batch_size'] = 32
+    h_params['epochs'] = 1000
+
+    # Define callbacks
+    early_stop = keras.callbacks.EarlyStopping(
+        monitor='val_loss', mode='min', patience=10, restore_best_weights=True)
+
+    callbacks = []
+    callbacks.append(early_stop)
+
     # Build model
-    model = build_model()
+    model = build_model(layers=2, neurons=64)
 
     # Train model
-    fit = train_model(model,X_train, y_train)
+    fit = train_model(model,X_train, y_train, h_params, callbacks)
 
     # Evaluate model
     model.evaluate(X_test, y_test)
