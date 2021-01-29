@@ -104,8 +104,8 @@ if __name__ == "__main__":
     eval_loss, eval_accuracy = model.evaluate(X_test, y_test, verbose=False)
     print("Loss = {:.2f}\nAccuracy = {:.2f}".format(eval_loss, eval_accuracy*100))
 
-    print("\nSaving model as mnist_reg.h5")
-    model.save("mnist_reg.h5")
+    print("\nSaving model as mnist.h5")
+    model.save("mnist.h5")
 
     fig.show()
    
