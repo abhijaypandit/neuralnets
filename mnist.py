@@ -8,17 +8,17 @@ print("Loading dataset...")
 (X_train, y_train), (X_test, y_test) = dataset.load_data()
 
 # Normalise examples
-X_train = X_train/255.0
-X_test = X_test/255.0
+X_train = keras.utils.normalize(X_train, order=2)
+X_test = keras.utils.normalize(X_test, order=2)
 
 # Define model
 model = keras.models.Sequential([
-    keras.layers.Flatten(input_shape=X_train.shape[1:]),
+    keras.layers.Flatten(),
     keras.layers.Dense(64, activation=keras.activations.relu),
     keras.layers.Dense(32, activation=keras.activations.relu),
     keras.layers.Dense(10, activation=keras.activations.softmax)
 ])
-model.summary()
+# model.summary() -- no input_shape given to model
 
 # Compile model
 model.compile(
