@@ -2,38 +2,52 @@ import keras
 
 keras.backend.clear_session()
 
-# Load dataset
-dataset = keras.datasets.mnist
-print("Loading dataset...")
-(X_train, y_train), (X_test, y_test) = dataset.load_data()
+def normalize(X):
+    x = keras.utils.normalize(X, order=2) # L2 norm
+    return x
 
-# Normalise examples
-X_train = keras.utils.normalize(X_train, order=2)
-X_test = keras.utils.normalize(X_test, order=2)
+def build_model(layers=1, neurons=32, learning_rate=0.01):
+    # define model
+    model = keras.models.Sequential()
+    model.add(keras.layers.Flatten())
+    for _ in range(layers):
+        model.add(keras.layers.Dense(neurons, activation='relu'))
+    model.add(keras.layers.Dense(10, activation='softmax'))
 
-# Define model
-model = keras.models.Sequential([
-    keras.layers.Flatten(),
-    keras.layers.Dense(64, activation=keras.activations.relu),
-    keras.layers.Dense(32, activation=keras.activations.relu),
-    keras.layers.Dense(10, activation=keras.activations.softmax)
-])
-# model.summary() -- no input_shape given to model
+    # compile model
+    model.compile(
+        loss=keras.losses.sparse_categorical_crossentropy,
+        optimizer=keras.optimizers.SGD(learning_rate=learning_rate),
+        metrics=['accuracy']
+    )
 
-# Compile model
-model.compile(
-    loss=keras.losses.sparse_categorical_crossentropy,
-    optimizer=keras.optimizers.SGD(),
-    metrics=['accuracy']
-)
+    return model
 
-# Train model
-fit = model.fit(
-    X_train, y_train,
-    batch_size=32,
-    epochs=50,
-    validation_split=0.2
-)
+def train_model(model, X_train, y_train):
+    fit = model.fit(
+        X_train, y_train,
+        batch_size=32,
+        epochs=50,
+        validation_split=0.2,
+    )
 
-# Evaluate model
-model.evaluate(X_test, y_test)
+    return fit
+
+if __name__ == "__main__":
+    # Load dataset
+    dataset = keras.datasets.mnist
+    print("Loading dataset...")
+    (X_train, y_train), (X_test, y_test) = dataset.load_data()
+
+    # Normalise examples
+    X_train = normalize(X_train)
+    X_test = normalize(X_test)
+
+    # Build model
+    model = build_model()
+
+    # Train model
+    fit = train_model(model,X_train, y_train)
+
+    # Evaluate model
+    model.evaluate(X_test, y_test)
