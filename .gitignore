@@ -1,6 +1,2 @@
-mnist_checkpoint.h5
-mnist_log
-mnist.h5
-fashion_mnist_checkpoint.h5
-fashion_mnist_log
-fashion_mnist.h5
+*.h5
+*_log
